@@ -1,0 +1,170 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://WALLorBG.png" type="Texture" id=2]
+[ext_resource path="res://WALL.png" type="Texture" id=3]
+[ext_resource path="res://World.gd" type="Script" id=4]
+[ext_resource path="res://Roboto-Black.ttf" type="DynamicFontData" id=5]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform vec2 tiled_factor = vec2(0.2, 0.2);
+uniform float aspect_ratio = 25.0;
+uniform float position = 0;
+
+void fragment(){
+	vec2 tiled_uvs = UV * tiled_factor;
+	tiled_uvs.y *= aspect_ratio;
+	tiled_uvs.x *= aspect_ratio;
+	tiled_uvs.y += position;
+	
+	//COLOR = vec4(tiled_uvs, 0.0, 1.0);
+	COLOR = texture(TEXTURE, tiled_uvs);
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/tiled_factor = Vector2( 0.2, 0.2 )
+shader_param/aspect_ratio = 25.0
+shader_param/position = 0.0
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 10, 1000 )
+
+[sub_resource type="Shader" id=4]
+code = "shader_type canvas_item;
+
+uniform vec2 tiled_factor = vec2(0.5, 0.5);
+uniform float aspect_ratio = 50.0;
+uniform float offset = 0.5;
+uniform float position = 0;
+
+void fragment(){
+	vec2 tiled_uvs = UV * tiled_factor;
+	tiled_uvs.y *= aspect_ratio;
+	tiled_uvs.x += offset;
+	tiled_uvs.y += position;
+	COLOR = texture(TEXTURE, tiled_uvs);
+}"
+
+[sub_resource type="ShaderMaterial" id=5]
+shader = SubResource( 4 )
+shader_param/tiled_factor = Vector2( 0.5, 0.5 )
+shader_param/aspect_ratio = 50.0
+shader_param/offset = 0.5
+shader_param/position = 0.0
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 10, 1000 )
+
+[sub_resource type="Shader" id=7]
+code = "shader_type canvas_item;
+
+uniform vec2 tiled_factor = vec2(1.0, 1.0);
+uniform float aspect_ratio = 50.0;
+uniform float offset = 0.5;
+uniform float position = 0;
+
+void fragment(){
+	vec2 tiled_uvs = UV * tiled_factor;
+	tiled_uvs.y *= aspect_ratio;
+	tiled_uvs.x += offset;
+	tiled_uvs.y += position;
+	
+	//COLOR = vec4(tiled_uvs, 0.0, 1.0);
+	COLOR = texture(TEXTURE, tiled_uvs);
+}"
+
+[sub_resource type="ShaderMaterial" id=8]
+shader = SubResource( 7 )
+shader_param/tiled_factor = Vector2( 0.5, 0.5 )
+shader_param/aspect_ratio = 50.0
+shader_param/offset = 0.0
+shader_param/position = 0.0
+
+[sub_resource type="DynamicFont" id=9]
+size = 50
+font_data = ExtResource( 5 )
+
+[node name="World" type="Node2D"]
+script = ExtResource( 4 )
+
+[node name="EnemyTimer" type="Timer" parent="."]
+process_priority = 2
+one_shot = true
+autostart = true
+
+[node name="SpikeTimer" type="Timer" parent="."]
+process_priority = 3
+wait_time = 3.0
+one_shot = true
+autostart = true
+
+[node name="Walls_BG" type="Node2D" parent="."]
+
+[node name="BG" type="Sprite" parent="Walls_BG"]
+material = SubResource( 2 )
+scale = Vector2( 25, 25 )
+texture = ExtResource( 2 )
+
+[node name="LeftWAll" type="StaticBody2D" parent="Walls_BG" groups=[
+"Wall",
+]]
+position = Vector2( -500, 0 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls_BG/LeftWAll"]
+shape = SubResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="Walls_BG/LeftWAll/CollisionShape2D"]
+material = SubResource( 5 )
+position = Vector2( -0.445435, -0.445435 )
+scale = Vector2( 1, 50 )
+texture = ExtResource( 3 )
+offset = Vector2( -3, 0 )
+
+[node name="RightWall" type="StaticBody2D" parent="Walls_BG" groups=[
+"Wall",
+]]
+position = Vector2( 500, 0 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls_BG/RightWall"]
+shape = SubResource( 6 )
+
+[node name="Sprite" type="Sprite" parent="Walls_BG/RightWall/CollisionShape2D"]
+material = SubResource( 8 )
+scale = Vector2( 1, 50 )
+texture = ExtResource( 3 )
+offset = Vector2( 3, 0 )
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+process_priority = 1
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+
+[node name="ReferenceRect" type="ReferenceRect" parent="Camera2D"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -500.0
+margin_top = -300.0
+margin_right = 500.0
+margin_bottom = 300.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Camera2D/ReferenceRect"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -1000.0
+margin_bottom = 600.0
+custom_fonts/font = SubResource( 9 )
+text = "0"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="timeout" from="EnemyTimer" to="." method="_on_EnemyTimer_timeout"]
+[connection signal="timeout" from="SpikeTimer" to="." method="_on_SpikeTimer_timeout"]
