@@ -21,7 +21,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Wusel Fall"
-run/main_scene="res://World.tscn"
+run/main_scene="res://Menu.tscn"
 config/icon="res://wusel_cover.png"
 
 [autoload]

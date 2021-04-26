@@ -141,6 +141,7 @@ offset = Vector2( 3, 0 )
 process_priority = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
+z_index = 5
 current = true
 
 [node name="ReferenceRect" type="ReferenceRect" parent="Camera2D"]

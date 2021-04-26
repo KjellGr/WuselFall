@@ -16,15 +16,20 @@ var score = 0
 onready var LWall = $Walls_BG/LeftWAll/CollisionShape2D/Sprite.material
 onready var RWall = $Walls_BG/RightWall/CollisionShape2D/Sprite.material
 onready var BG = $Walls_BG/BG.material
-onready var terrmtograv = gravity/terminal_velocity
+var termtograv = 0.2
 onready var Enemy = load("res://Enemy.tscn")
 onready var Spikes = load("res://Spikes.tscn")
 onready var label = $Camera2D/ReferenceRect/Label
 
+func _ready():
+	randomize()
+	$EnemyTimer.start()
+	$SpikeTimer.start()
+
 
 func _process(delta):
 	fall = clamp(fall + gravity * delta , 0, terminal_velocity)
-	gravity = terminal_velocity * terrmtograv
+	gravity = terminal_velocity * termtograv
 	if Input.is_action_just_pressed("JUMP") and jumpable:
 		jumpable = false;
 		jump()
